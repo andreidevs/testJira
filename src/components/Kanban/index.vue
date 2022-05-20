@@ -1,8 +1,20 @@
 <template>
   <div class="kanban">
-    <h1 class="font-semibold text-xl px-4 mt-6">Список задач</h1>
+    <div class="flex items-center px-4 mt-6">
+      <h1 class="font-semibold text-xl">Список задач</h1>
+      <div class="flex w-1/2 ml-4">
+        <a-input
+          v-model="taskName"
+          allowClear
+          placeholder="Введите название задачи"
+        ></a-input>
+        <a-button class="ml-2" type="primary" @click="addTask(0)" icon="plus">
+          Добавить</a-button
+        >
+      </div>
+    </div>
 
-    <div class="kanban_container">
+    <div class="kanban_container mt-2">
       <div class="kanban_wrapper" ref="kanbanWrapper">
         <div class="kanban-main">
           <span class="scroll_dummy"></span>
@@ -71,6 +83,7 @@ export default {
         animation: 200,
         ghostClass: "ghost",
       },
+      taskName: "",
       selectElement: null,
       allData: [
         {
@@ -103,9 +116,13 @@ export default {
   methods: {
     addTask(index) {
       const newEl = {
-        name: `Задача ${Math.floor(Math.random() * 9999999)}`,
+        name:
+          this.taskName.length === 0
+            ? `Задача ${Math.floor(Math.random() * 9999999)}`
+            : this.taskName,
       };
-      this.allData[index].list.push(newEl);
+      this.taskName = "";
+      this.allData[index].list.unshift(newEl);
       this.saveTask();
     },
     saveTask() {
