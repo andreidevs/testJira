@@ -5,7 +5,15 @@
     :bordered="false"
     class="mb-4 kanban-card"
   >
-    <span>{{ item.name }}</span>
+    <div class="flex justify-between">
+      <span>{{ item.name }}</span>
+      <a-button
+        @click="$emit('remove')"
+        icon="close"
+        size="small"
+        type="danger"
+      ></a-button>
+    </div>
   </a-card>
 </template>
 

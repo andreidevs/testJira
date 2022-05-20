@@ -7,9 +7,13 @@
           v-model="taskName"
           allowClear
           placeholder="Введите название задачи"
+          @pressEnter="addTask(0)"
         ></a-input>
         <a-button class="ml-2" type="primary" @click="addTask(0)" icon="plus">
           Добавить</a-button
+        >
+        <a-button class="ml-2" type="danger" @click="removeAll" icon="delete">
+          Удалить все</a-button
         >
       </div>
     </div>
@@ -57,9 +61,10 @@
                 >
                   <Item
                     class="mb-2 task"
-                    v-for="element in el.list"
-                    :key="element.id"
+                    v-for="(element, elIndex) in el.list"
+                    :key="elIndex"
                     :item="element"
+                    @remove="removeItem(index, element.id)"
                   />
                 </draggable>
               </div>
@@ -116,6 +121,7 @@ export default {
   methods: {
     addTask(index) {
       const newEl = {
+        id: Date.now(),
         name:
           this.taskName.length === 0
             ? `Задача ${Math.floor(Math.random() * 9999999)}`
@@ -123,16 +129,47 @@ export default {
       };
       this.taskName = "";
       this.allData[index].list.unshift(newEl);
-      this.saveTask();
+      this.saveTasks();
     },
-    saveTask() {
+    saveTasks() {
       localStorage.setItem("taskList", JSON.stringify(this.allData));
+    },
+    removeItem(index, id) {
+      this.allData[index].list = this.allData[index].list.filter(
+        (el) => el.id !== id
+      );
+      this.saveTasks();
+    },
+    removeAll() {
+      this.allData = [
+        {
+          name: "Новая",
+          loading: false,
+          color: "blue",
+          list: [],
+        },
+        {
+          name: "В работе",
+          color: "purple",
+
+          loading: false,
+          list: [],
+        },
+        {
+          name: "Завершенная",
+          color: "orange",
+
+          loading: false,
+          list: [],
+        },
+      ];
+      this.saveTasks();
     },
     async end() {
       try {
         setTimeout(async () => {
           if (this.selectElement) {
-            this.saveTask();
+            this.saveTasks();
           }
         }, 200);
       } catch (error) {
